@@ -1,6 +1,38 @@
 import "../app.css"
+import { useState } from "react"
 
 export default function Login(){
+
+    const[regiterForm, setregisterForm] = useState({
+      firstname : "", 
+      lastname : "",
+      email : "", 
+      username: "", 
+      password :"", 
+      confirmpassword : "",
+      photo: null
+    })
+
+    const handlechange =(e)=>{
+      console.log("Dsd")
+      const { name, value } = e.target;
+
+        setregisterForm((prev) => {
+          return {
+           ...prev,
+          [name]: value
+          }
+          })
+    }
+
+    const handleSubmit = (e)=>{
+      console.log("Dsdsd")
+      e.prevetdefault()
+      console.log(regiterForm);
+    }
+    
+          
+
     return(
         <>
         <div class="app-root p-3">
@@ -80,31 +112,29 @@ export default function Login(){
 
             <div class="col-4 bg-dark">
               <div class="d-flex flex-column bd-highlight pt-5 gap-3">
-                {/* ===== Login Card (unchanged) ===== */}
+      
                 <div class="card">
                   <div class="card-header">Login</div>
                   <div class="card-body">
                     <form>
                       <div class="mb-3">
-                        <label htmlFor="loginEmail" class="form-label">
+                        <label class="form-label">
                           Email address
                         </label>
                         <input
                           type="email"
                           class="form-control"
-                          id="loginEmail"
                           placeholder="Enter email"
                         />
                       </div>
 
                       <div class="mb-3">
-                        <label htmlFor="loginPassword" class="form-label">
+                        <label class="form-label">
                           Password
                         </label>
                         <input
                           type="password"
                           class="form-control"
-                          id="loginPassword"
                           placeholder="Password"
                         />
                       </div>
@@ -116,16 +146,18 @@ export default function Login(){
                   </div>
                 </div>
 
-                {/* ===== Registration Card (UPDATED) ===== */}
+     
                 <div class="card">
                   <div class="card-header">Register</div>
                   <div class="card-body">
-                    <form>
+                    <form onSubmit={handleSubmit}> 
                       <label class="form-label">First Name</label>
                       <input
                         type="text"
                         class="form-control"
                         placeholder="First name"
+                        name = "firstname"
+                        onChange={handlechange}
                       />
 
                       <label class="form-label">Last Name</label>
@@ -133,6 +165,8 @@ export default function Login(){
                         type="text"
                         class="form-control"
                         placeholder="Last name"
+                        name = "lastname"
+                        onChange={handlechange}
                       />
 
                       <div class="mt-3">
@@ -141,6 +175,9 @@ export default function Login(){
                           type="text"
                           class="form-control"
                           placeholder="Username"
+                          name = "username"
+                          onChange={handlechange}
+
                         />
                       </div>
 
@@ -150,6 +187,8 @@ export default function Login(){
                           type="email"
                           class="form-control"
                           placeholder="Email"
+                          name = "email"
+                          onChange={handlechange}
                         />
                       </div>
 
@@ -159,6 +198,8 @@ export default function Login(){
                           type="password"
                           class="form-control"
                           placeholder="Password"
+                          name = "password"
+                          onChange={handlechange}
                         />
                       </div>
 
@@ -168,12 +209,19 @@ export default function Login(){
                           type="password"
                           class="form-control"
                           placeholder="Confirm password"
+                          name = "confirmpassword"
+                          onChange={handlechange}
                         />
                       </div>
 
                       <div class="mt-3">
                         <label class="form-label">Profile Photo</label>
-                        <input type="file" class="form-control" />
+                        <input type="file" class="form-control" name = "photo" onChange={(prev)=>{
+                          return {
+                            ...prev, 
+                            photo : e.target.file[0]
+                          }
+                        }} />
                       </div>
 
                       <button type="submit" class="btn btn-success mt-4">
