@@ -9,4 +9,4 @@ const UserSchema = new mongoose.Schema({
     photo : {type : String}
 }, {timestamps : true})
 
-export default mongoose.model("User", "UserSchema");
+export default mongoose.model("User", UserSchema);

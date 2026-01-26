@@ -1,41 +1,103 @@
-import "../app.css"
-import { useState } from "react"
+import "../app.css";
+import { useState } from "react";
+import axios from "axios";
 
-export default function Login(){
+export default function Login() {
+  const [registerForm, setregisterForm] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    username: "",
+    password: "",
+    confirmpassword: "",
+    photo: null,
+  });
 
-    const[regiterForm, setregisterForm] = useState({
-      firstname : "", 
-      lastname : "",
-      email : "", 
-      username: "", 
-      password :"", 
-      confirmpassword : "",
-      photo: null
-    })
+  const [loginForm, setloginForm] = useState({
+    loginId : "",
+    password :""
+  });
 
-    const handlechange =(e)=>{
-      console.log("Dsd")
-      const { name, value } = e.target;
+  const handleloginchange = (e)=>{
+    console.log("Dsd");
+    const { name, value } = e.target;
 
-        setregisterForm((prev) => {
-          return {
-           ...prev,
-          [name]: value
-          }
-          })
-    }
+    setloginForm((prev) => {
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
+  }
 
-    const handleSubmit = (e)=>{
-      console.log("Dsdsd")
-      e.prevetdefault()
-      console.log(regiterForm);
-    }
-    
-          
+  const handlechange = (e) => {
+    console.log("Dsd");
+    const { name, value } = e.target;
 
-    return(
-        <>
-        <div class="app-root p-3">
+    setregisterForm((prev) => {
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
+  };
+
+  const handleLoginSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/login",
+      {
+        loginId: loginForm.loginId,
+        password: loginForm.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    alert(res.data.message);
+  } catch (err) {
+    alert(err.response?.data?.message || "Lorrrgin failed");
+  }
+};
+
+
+
+
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData();
+  formData.append("firstname", registerForm.firstname);
+  formData.append("lastname", registerForm.lastname);
+  formData.append("username", registerForm.username);
+  formData.append("email", registerForm.email);
+  formData.append("password", registerForm.password);
+
+  if (registerForm.photo) {
+    formData.append("photo", registerForm.photo);
+  }
+
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/register",
+      formData
+    );
+
+    alert(res.data.message);
+  } catch (err) {
+    alert(err.response?.data?.message || "Registration failed");
+  }
+};
+
+
+  return (
+    <>
+      <div class="app-root p-3">
         <div class="container bg-dark">
           <div class="row bg-light p-3">
             <div class="col-8 bg-dark">
@@ -112,29 +174,28 @@ export default function Login(){
 
             <div class="col-4 bg-dark">
               <div class="d-flex flex-column bd-highlight pt-5 gap-3">
-      
                 <div class="card">
                   <div class="card-header">Login</div>
                   <div class="card-body">
-                    <form>
+                    <form onSubmit={handleLoginSubmit}>
                       <div class="mb-3">
-                        <label class="form-label">
-                          Email address
-                        </label>
+                        <label class="form-label">Email address/Username</label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control"
-                          placeholder="Enter email"
+                          name = "loginId"
+                          onChange = {handleloginchange}
+                          placeholder="Enter email/username"
                         />
                       </div>
 
                       <div class="mb-3">
-                        <label class="form-label">
-                          Password
-                        </label>
+                        <label class="form-label">Password</label>
                         <input
                           type="password"
                           class="form-control"
+                          name = "password"
+                          onChange = {handleloginchange}
                           placeholder="Password"
                         />
                       </div>
@@ -146,17 +207,16 @@ export default function Login(){
                   </div>
                 </div>
 
-     
                 <div class="card">
                   <div class="card-header">Register</div>
                   <div class="card-body">
-                    <form onSubmit={handleSubmit}> 
+                    <form onSubmit={handleSubmit}>
                       <label class="form-label">First Name</label>
                       <input
                         type="text"
                         class="form-control"
                         placeholder="First name"
-                        name = "firstname"
+                        name="firstname"
                         onChange={handlechange}
                       />
 
@@ -165,7 +225,7 @@ export default function Login(){
                         type="text"
                         class="form-control"
                         placeholder="Last name"
-                        name = "lastname"
+                        name="lastname"
                         onChange={handlechange}
                       />
 
@@ -175,9 +235,8 @@ export default function Login(){
                           type="text"
                           class="form-control"
                           placeholder="Username"
-                          name = "username"
+                          name="username"
                           onChange={handlechange}
-
                         />
                       </div>
 
@@ -187,7 +246,7 @@ export default function Login(){
                           type="email"
                           class="form-control"
                           placeholder="Email"
-                          name = "email"
+                          name="email"
                           onChange={handlechange}
                         />
                       </div>
@@ -198,7 +257,7 @@ export default function Login(){
                           type="password"
                           class="form-control"
                           placeholder="Password"
-                          name = "password"
+                          name="password"
                           onChange={handlechange}
                         />
                       </div>
@@ -209,19 +268,24 @@ export default function Login(){
                           type="password"
                           class="form-control"
                           placeholder="Confirm password"
-                          name = "confirmpassword"
+                          name="confirmpassword"
                           onChange={handlechange}
                         />
                       </div>
 
                       <div class="mt-3">
                         <label class="form-label">Profile Photo</label>
-                        <input type="file" class="form-control" name = "photo" onChange={(prev)=>{
-                          return {
-                            ...prev, 
-                            photo : e.target.file[0]
+                        <input
+                          type="file"
+                          class="form-control"
+                          name="photo"
+                          onChange={(e) =>
+                            setregisterForm((prev) => ({
+                              ...prev,
+                              photo: e.target.files[0],
+                            }))
                           }
-                        }} />
+                        />
                       </div>
 
                       <button type="submit" class="btn btn-success mt-4">
@@ -236,5 +300,5 @@ export default function Login(){
         </div>
       </div>
     </>
-    )
+  );
 }

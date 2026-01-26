@@ -1,4 +1,48 @@
-node_modules
+# =====================
+# Environment variables
+# =====================
 .env
-dist
+.env.*
+backend/.env
+frontend/.env
+
+# =====================
+# Node dependencies
+# =====================
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# =====================
+# Uploaded files (user data)
+# =====================
+backend/Uploads/
+Uploads/
+
+# =====================
+# Logs
+# =====================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+
+# =====================
+# OS / Editor files
+# =====================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# =====================
+# Build output (frontend)
+# =====================
+frontend/dist/
+frontend/build/
+
+# =====================
+# Optional: coverage
+# =====================
+coverage/
 
