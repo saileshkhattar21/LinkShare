@@ -32,7 +32,7 @@ export default function CreateTopic() {
       const res = await axios.post(
         "http://localhost:5000/api/topic/create",
         formData,
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       alert(res.data.message);
@@ -61,7 +61,7 @@ export default function CreateTopic() {
         <option value="Public">Public</option>
         <option value="Private">Private</option>
       </select>
-      <button class="btn btn-success mb-3 mx-auto d-block" type="submit">
+      <button class="btn btn-success mt-3 mx-auto d-block" type="submit">
         Create Topic
       </button>
     </form>

@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-export default function ShareLinkForm() {
+export default function ShareLinkForm({ topics }) {
   const [formState, setFormState] = useState({
     Link: "",
-    Description :"",
+    Description: "",
     Topic: "",
   });
 
@@ -26,17 +26,25 @@ export default function ShareLinkForm() {
         onChange={handleChange}
       />
       <label class="form-label"> Description </label>
-      <textarea class="form-control"  rows="3"></textarea>
+      <textarea class="form-control" rows="3"></textarea>
       <label class="form-label mt-2"> Topic </label>
       <select
         class="form-select"
-        name="Topic"
-        value={formState.visibility}
+        name="topicId"
+        value={formState.topicId}
         onChange={handleChange}
       >
-        <option value="Select Topic">Select Topic</option>
+        <option value="">Select Topic</option>
+
+        {topics.map((topic) => (
+          <option key={topic._id} value={topic.name}>
+            {topic.name}
+          </option>
+        ))}
       </select>
-      
+      <button class="btn btn-success mt-3 mx-auto d-block" type="submit">
+        Share Link
+      </button>
     </form>
   );
 }

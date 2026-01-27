@@ -1,21 +1,41 @@
 import Navbar from "../Components/Navbar";
-import Modals from "../Components/Modals"
-import ShareLinkForm from "../Components/Link_Sharing"
+import Modals from "../Components/Modals";
+import ShareLinkForm from "../Components/Link_Sharing";
 import CreateTopic from "../Components/Create_Topic";
 import ShareDocument from "../Components/Document_Sharing";
 import SendInvite from "../Components/Send_Invite";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Dashboard() {
-  const [activeModal, setActiveModal] = useState(null)
+  const [activeModal, setActiveModal] = useState(null);
+  const [topics, setTopics] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const closeModal = ()=>{
-    setActiveModal(null)
-  }
+  useEffect(() => {
+    async function fetchTopics() {
+      try {
+        setLoading(true);
+        const res = await axios.get("http://localhost:5000/api/topic/all", {
+          withCredentials: true,
+        });
+        setTopics(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTopics();
+  }, []);
+
+  const closeModal = () => {
+    setActiveModal(null);
+  };
   return (
     <>
-    <Modals
+      <Modals
         show={activeModal !== null}
         title={
           activeModal === "Link_Sharing"
@@ -28,12 +48,13 @@ export default function Dashboard() {
         }
         onClose={closeModal}
       >
-        {activeModal === "Link_Sharing" && <ShareLinkForm />}
-        {activeModal === "Document_Sharing" && <ShareDocument />}
-        {activeModal === "Send_Invite" && <SendInvite />}
+        {activeModal === "Link_Sharing" && <ShareLinkForm topics={topics} />}
+        {activeModal === "Document_Sharing" && (
+          <ShareDocument topics={topics} />
+        )}
+        {activeModal === "Send_Invite" && <SendInvite topics={topics} />}
         {activeModal === "Create_Topic" && <CreateTopic />}
-
-    </Modals>
+      </Modals>
       <div class="container bg-dark p-3 mt-2">
         <div class="row bg-light p-2">
           <div class="col-6 bg-dark pt-2 pb-2">
@@ -55,7 +76,7 @@ export default function Dashboard() {
                     <div class="row text-center">
                       <div class="col-6">
                         <h6>Topics Added</h6>
-                        <div class="mt-2 fs-4 fw-bold">12</div>
+                        <div class="mt-2 fs-4 fw-bold">{topics.length}</div>
                       </div>
 
                       <div class="col-6">
@@ -70,10 +91,38 @@ export default function Dashboard() {
           </div>
           <div class="col-6 bg-dark p-3">
             <div class="d-flex flex-column gap-2">
-              <button class="btn btn-success" onClick={()=>{setActiveModal("Link_Sharing")}}>Share Link</button>
-              <button class="btn btn-success" onClick={()=>{setActiveModal("Document_Sharing")}}>Share Document</button>
-              <button class="btn btn-success" onClick={()=>{setActiveModal("Send_Invite")}}>Send Invite</button>
-              <button class="btn btn-success" onClick={()=>{setActiveModal("Create_Topic")}}>Create Topic</button>
+              <button
+                class="btn btn-success"
+                onClick={() => {
+                  setActiveModal("Link_Sharing");
+                }}
+              >
+                Share Link
+              </button>
+              <button
+                class="btn btn-success"
+                onClick={() => {
+                  setActiveModal("Document_Sharing");
+                }}
+              >
+                Share Document
+              </button>
+              <button
+                class="btn btn-success"
+                onClick={() => {
+                  setActiveModal("Send_Invite");
+                }}
+              >
+                Send Invite
+              </button>
+              <button
+                class="btn btn-success"
+                onClick={() => {
+                  setActiveModal("Create_Topic");
+                }}
+              >
+                Create Topic
+              </button>
             </div>
           </div>
         </div>

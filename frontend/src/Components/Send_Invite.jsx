@@ -1,19 +1,19 @@
 import { useState } from "react";
 
-export default function SendInvite() {
+export default function SendInvite({ topics }) {
   const [formState, setFormState] = useState({
-    email : "", 
-    Topic : ""
+    email: "",
+    Topic: "",
   });
 
-  const handleChange = (e)=>{
-    const{name, value} = e.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-    setFormState((prev)=>({
-      ...prev, 
-      [name] : value
-    }))
-  }
+    setFormState((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   return (
     <>
       <form>
@@ -29,12 +29,21 @@ export default function SendInvite() {
         <label class="form-label mt-2"> Topic </label>
         <select
           class="form-select"
-          name="Topic"
-          value={formState.visibility}
+          name="topicId"
+          value={formState.topicId}
           onChange={handleChange}
         >
-          <option value="Select Topic">Select Topic</option>
+          <option value="">Select Topic</option>
+
+          {topics.map((topic) => (
+            <option key={topic._id} value={topic.name}>
+              {topic.name}
+            </option>
+          ))}
         </select>
+        <button class="btn btn-success mt-3 mx-auto d-block" type="submit">
+          Send Invite
+        </button>
       </form>
     </>
   );
