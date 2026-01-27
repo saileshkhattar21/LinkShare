@@ -1,13 +1,12 @@
 import Topics from "../Models/Topics.js"
 
 export const createTopic = async (req, res) => {
-    console.log("fsdfsdfsd")
+    console.log(req.body)
     try {
         console.log("try")
         const user_id = req.user;
         console.log(user_id)
 
-        console.log
         const { name, visibility } = req.body;
         console.log(name, visibility)
 
@@ -43,14 +42,15 @@ export const createTopic = async (req, res) => {
 }
 
 export const getTopic = async (req, res) => {
-    try {
-        const user_id = req.user;
+  try {
+    console.log("Here")
+    const user_id = req.user;
 
-        const topics = await Topics.find({ user: user_id })
 
-        res.status(200).json({ message: "Topics Fetched Successfully" })
+    const topics = await Topics.find({ User: user_id });
 
-    } catch (err) {
-        res.status(500).json({ message: err.message })
-    }
-}
+    res.status(200).json(topics);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
