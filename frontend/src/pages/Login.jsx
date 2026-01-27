@@ -1,6 +1,7 @@
 import "../app.css";
 import { useState } from "react";
 import axios from "axios";
+import { Link, NavLink } from "react-router-dom";
 
 export default function Login() {
   const [registerForm, setregisterForm] = useState({
@@ -14,11 +15,11 @@ export default function Login() {
   });
 
   const [loginForm, setloginForm] = useState({
-    loginId : "",
-    password :""
+    loginId: "",
+    password: "",
   });
 
-  const handleloginchange = (e)=>{
+  const handleloginchange = (e) => {
     console.log("Dsd");
     const { name, value } = e.target;
 
@@ -28,7 +29,7 @@ export default function Login() {
         [name]: value,
       };
     });
-  }
+  };
 
   const handlechange = (e) => {
     console.log("Dsd");
@@ -43,57 +44,51 @@ export default function Login() {
   };
 
   const handleLoginSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/auth/login",
-      {
-        loginId: loginForm.loginId,
-        password: loginForm.password,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        {
+          loginId: loginForm.loginId,
+          password: loginForm.password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
-    alert(res.data.message);
-  } catch (err) {
-    alert(err.response?.data?.message || "Lorrrgin failed");
-  }
-};
+      alert(res.data.message);
+    } catch (err) {
+      alert(err.response?.data?.message || "Lorrrgin failed");
+    }
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    const formData = new FormData();
+    formData.append("firstname", registerForm.firstname);
+    formData.append("lastname", registerForm.lastname);
+    formData.append("username", registerForm.username);
+    formData.append("email", registerForm.email);
+    formData.append("password", registerForm.password);
 
+    if (registerForm.photo) {
+      formData.append("photo", registerForm.photo);
+    }
 
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        formData,
+      );
 
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  const formData = new FormData();
-  formData.append("firstname", registerForm.firstname);
-  formData.append("lastname", registerForm.lastname);
-  formData.append("username", registerForm.username);
-  formData.append("email", registerForm.email);
-  formData.append("password", registerForm.password);
-
-  if (registerForm.photo) {
-    formData.append("photo", registerForm.photo);
-  }
-
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/auth/register",
-      formData
-    );
-
-    alert(res.data.message);
-  } catch (err) {
-    alert(err.response?.data?.message || "Registration failed");
-  }
-};
-
+      alert(res.data.message);
+    } catch (err) {
+      alert(err.response?.data?.message || "Registration failed");
+    }
+  };
 
   return (
     <>
@@ -114,23 +109,28 @@ const handleSubmit = async (e) => {
                             With supporting text below as a natural lead-in to
                             additional content.
                           </p>
-                          <a href="#" class="btn btn-primary">
+                          <NavLink
+                            to="/somewhere"
+                            class="btn btn-primary text-white"
+                          >
                             Go somewhere
-                          </a>
+                          </NavLink>
                         </div>
                       </div>
 
                       <div class="card">
-                        <div class="card-header">Featured</div>
+                        <div class="card-header">Post Title</div>
                         <div class="card-body">
-                          <h5 class="card-title">Special title treatment</h5>
+                          <h5 class="card-title">Short Decription</h5>
                           <p class="card-text">
-                            With supporting text below as a natural lead-in to
-                            additional content.
+                            Long Discription.........
                           </p>
-                          <a href="#" class="btn btn-primary">
+                          <NavLink
+                            to="/somewhere"
+                            class="btn btn-primary text-white"
+                          >
                             Go somewhere
-                          </a>
+                          </NavLink>
                         </div>
                       </div>
                     </div>
@@ -183,8 +183,8 @@ const handleSubmit = async (e) => {
                         <input
                           type="text"
                           class="form-control"
-                          name = "loginId"
-                          onChange = {handleloginchange}
+                          name="loginId"
+                          onChange={handleloginchange}
                           placeholder="Enter email/username"
                         />
                       </div>
@@ -194,8 +194,8 @@ const handleSubmit = async (e) => {
                         <input
                           type="password"
                           class="form-control"
-                          name = "password"
-                          onChange = {handleloginchange}
+                          name="password"
+                          onChange={handleloginchange}
                           placeholder="Password"
                         />
                       </div>
