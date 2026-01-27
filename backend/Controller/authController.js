@@ -1,6 +1,7 @@
 import User from "../Models/Users.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { generateOtp, hashOtp } from "../Services/OTPServices.js"
 
 export const register = async (req, res) => {
   try {
@@ -89,3 +90,22 @@ export const login = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const forgetPassword = async(req, res)=>{
+  const user_id = req.user;
+
+  const user = await User.find(user_id);
+
+  if (!user)
+    return res.status(404).json({ message: "User not found" });
+
+  const otp = generateOtp();
+  user.resetOtp = hashOtp(otp);
+  user.resetOtpExpiry = Date.now() + 10 * 60 * 1000;
+
+  await user.save();
+  await sendOtpEmail(email, otp);
+  res.json({ message: "OTP sent to email" });
+}
+
+
