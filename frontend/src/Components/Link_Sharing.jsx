@@ -36,7 +36,7 @@ export default function ShareLinkForm() {
       >
         <option value="Select Topic">Select Topic</option>
       </select>
-      <button class="btn btn-success mt-3 mx-auto d-block">Create Link</button>
+      
     </form>
   );
 }

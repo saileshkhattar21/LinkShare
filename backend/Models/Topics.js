@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
+import User from "../Models/Users.js"
 
 const TopicsSchema = new mongoose.Schema({
-    name : {type: string, required :true},
+    name : {type: String, required :true},
     user : {
         type : mongoose.Schema.Types.ObjectId, 
         ref : User

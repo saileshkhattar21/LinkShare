@@ -21,6 +21,7 @@ export default function Modal({ show, title, onClose, children }) {
               {children}
             </div>
 
+
           </div>
         </div>
       </div>

@@ -2,8 +2,12 @@ import express from "express"
 import mongoose from  "mongoose"
 import cors from "cors"
 import dotenv from "dotenv"
-import authRouter from "./Routers/authRouter.js"
 import cookieParser from "cookie-parser";
+
+import authRouter from "./Routers/authRouter.js"
+import TopicRouter from "./Routers/TopicRouter.js"
+
+
 
 
 
@@ -24,6 +28,8 @@ app.use(cookieParser());
 app.use("/Uploads", express.static("Uploads"))
 
 app.use("/api/auth", authRouter)
+app.use("/api/topic",TopicRouter)
+
 
 
 
