@@ -1,0 +1,50 @@
+import { useState } from "react";
+
+export default function ShareLinkForm({ topics }) {
+  const [formState, setFormState] = useState({
+    Link: "",
+    Description: "",
+    Topic: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormState((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  return (
+    <form>
+      <label class="form-label"> Link</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Link"
+        name="Link"
+        onChange={handleChange}
+      />
+      <label class="form-label"> Description </label>
+      <textarea class="form-control" rows="3"></textarea>
+      <label class="form-label mt-2"> Topic </label>
+      <select
+        class="form-select"
+        name="topicId"
+        value={formState.topicId}
+        onChange={handleChange}
+      >
+        <option value="">Select Topic</option>
+
+        {topics.map((topic) => (
+          <option key={topic._id} value={topic.name}>
+            {topic.name}
+          </option>
+        ))}
+      </select>
+      <button class="btn btn-success mt-3 mx-auto d-block" type="submit">
+        Share Link
+      </button>
+    </form>
+  );
+}
