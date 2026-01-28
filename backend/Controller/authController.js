@@ -104,10 +104,12 @@ export const forgetPassword = async (req, res) => {
   if (!user) return res.status(404).json({ message: "User not found" });
 
   const otp = generateOtp();
-  user.resetOtp = hashOtp(otp);
-  user.resetOtpExpiry = Date.now() + 10 * 60 * 1000;
+  user.resetOTP = hashOtp(otp);
+  user.resetOTPexpiry = Date.now() + 10 * 60 * 1000;
 
   await user.save();
+
+
   await sendOtpEmail(email, otp);
   res.json({ message: "OTP sent to email" });
 };
@@ -118,21 +120,25 @@ export const verifyOTP = async (req, res) => {
 
     console.log(email, otp);
 
-    const user = User.findOne({ email: email });
+    const user = await User.findOne({ email: email });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const isMatch = user.resetOtp === otp && Date.now() < user.resetOtpExpiry;
+    console.log(user);
 
-    if (!isMatch) {
+    const isOtpValid =
+      (await bcrypt.compare(otp, user.resetOTP)) &&
+      Date.now() < user.resetOTPexpiry;
+
+    if (!isOtpValid) {
       return res
-        .status(404)
+        .status(401)
         .json({ message: "Incorrect OTP/Request timed out" });
     }
 
-    return res(201).message({ message: "OTP verified Successfully" });
+    return res.status(201).json({ message: "OTP verified Successfully" });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
