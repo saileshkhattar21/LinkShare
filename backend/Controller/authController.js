@@ -1,7 +1,8 @@
 import User from "../Models/Users.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { generateOtp, hashOtp } from "../Services/OTPServices.js"
+import { generateOtp, hashOtp } from "../Services/OTPServices.js";
+import { sendOtpEmail } from "../Services/EmailService.js";
 
 export const register = async (req, res) => {
   try {
@@ -55,14 +56,14 @@ export const login = async (req, res) => {
 
     console.log(user);
 
-    if (!user){
+    if (!user) {
       return res.status(400).json({ message: "Invalid creddddentials" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     console.log(isMatch);
-    if (!isMatch){
+    if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
@@ -91,13 +92,16 @@ export const login = async (req, res) => {
   }
 };
 
-export const forgetPassword = async(req, res)=>{
-  const user_id = req.user;
+export const forgetPassword = async (req, res) => {
+  const { email } = req.body;
 
-  const user = await User.find(user_id);
+  console.log(email);
 
-  if (!user)
-    return res.status(404).json({ message: "User not found" });
+  const user = await User.findOne({ email: email });
+
+  console.log(user);
+
+  if (!user) return res.status(404).json({ message: "User not found" });
 
   const otp = generateOtp();
   user.resetOtp = hashOtp(otp);
@@ -106,6 +110,30 @@ export const forgetPassword = async(req, res)=>{
   await user.save();
   await sendOtpEmail(email, otp);
   res.json({ message: "OTP sent to email" });
-}
+};
 
+export const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
 
+    console.log(email, otp);
+
+    const user = User.findOne({ email: email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = user.resetOtp === otp && Date.now() < user.resetOtpExpiry;
+
+    if (!isMatch) {
+      return res
+        .status(404)
+        .json({ message: "Incorrect OTP/Request timed out" });
+    }
+
+    return res(201).message({ message: "OTP verified Successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};

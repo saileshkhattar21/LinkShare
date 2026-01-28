@@ -1,9 +1,10 @@
 import "../app.css";
 import { useState } from "react";
 import axios from "axios";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [registerForm, setregisterForm] = useState({
     firstname: "",
     lastname: "",
@@ -18,6 +19,8 @@ export default function Login() {
     loginId: "",
     password: "",
   });
+
+  const [loginhelpertext, setloginhelpertext] = useState("");
 
   const handleloginchange = (e) => {
     console.log("Dsd");
@@ -90,6 +93,29 @@ export default function Login() {
     }
   };
 
+  const handleforgetpassword = async () => {
+    if (loginForm.loginId == "") {
+      setloginhelpertext("Please Enter Email");
+      return;
+    }
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/forget",
+        { email: loginForm.loginId },
+        {
+          withCredentials: true,
+        },
+      );
+
+      alert(res.data.message);
+      navigate("/forget-password", {
+        state: { email: loginForm.loginId },
+      });
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   return (
     <>
       <div class="app-root p-3">
@@ -122,9 +148,7 @@ export default function Login() {
                         <div class="card-header">Post Title</div>
                         <div class="card-body">
                           <h5 class="card-title">Short Decription</h5>
-                          <p class="card-text">
-                            Long Discription.........
-                          </p>
+                          <p class="card-text">Long Discription.........</p>
                           <NavLink
                             to="/somewhere"
                             class="btn btn-primary text-white"
@@ -142,13 +166,10 @@ export default function Login() {
                       <div class="card">
                         <div class="card-header">Featured</div>
                         <div class="card-body">
-                          <h5 class="card-title">Special title treatment</h5>
-                          <p class="card-text">
-                            With supporting text below as a natural lead-in to
-                            additional content.
-                          </p>
+                          <h5 class="card-title">Secendory heading</h5>
+                          <p class="card-text">GREWRGERGERGERGERG</p>
                           <a href="#" class="btn btn-primary">
-                            Go somewhere
+                            BUTTON
                           </a>
                         </div>
                       </div>
@@ -156,11 +177,8 @@ export default function Login() {
                       <div class="card">
                         <div class="card-header">Featured</div>
                         <div class="card-body">
-                          <h5 class="card-title">Special title treatment</h5>
-                          <p class="card-text">
-                            With supporting text below as a natural lead-in to
-                            additional content.
-                          </p>
+                          <h5 class="card-title">Titile - 2</h5>
+                          <p class="card-text">myumyumyumyumyumyumyumymhg</p>
                           <a href="#" class="btn btn-primary">
                             Go somewhere
                           </a>
@@ -200,9 +218,23 @@ export default function Login() {
                         />
                       </div>
 
-                      <button type="submit" class="btn btn-primary">
+                      <button
+                        type="button"
+                        className="btn text-primary hover-underline d-block m-auto"
+                        onClick={handleforgetpassword}
+                      >
+                        Forgot Password?
+                      </button>
+
+                      <button
+                        type="submit"
+                        class="btn btn-primary d- block w-100"
+                      >
                         Login
                       </button>
+                      {loginhelpertext ? (
+                        <small className="text-danger">{loginhelpertext}</small>
+                      ) : null}
                     </form>
                   </div>
                 </div>

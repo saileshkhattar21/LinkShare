@@ -1,15 +1,18 @@
 import mongoose from "mongoose";
 
-const UserSchema = new mongoose.Schema({
-    firstname : {type: String, required :true}, 
-    lastname :{type:String, required : true}, 
-    username :{type :String, required :true, unique :true}, 
-    email : {type : String, required:true, unique : true},
-    password : {type :String, required :true, unique : true}, 
-    photo : {type : String}, 
+const UserSchema = new mongoose.Schema(
+  {
+    firstname: { type: String, required: true },
+    lastname: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true, unique: true },
+    photo: { type: String },
 
-    resetOTP :{type: String},
-    resetOTPexpirt : {type : Date}
-}, {timestamps : true})
+    resetOTP: { type: String },
+    resetOTPexpiry: { type: Date },
+  },
+  { timestamps: true },
+);
 
 export default mongoose.model("User", UserSchema);
