@@ -109,7 +109,6 @@ export const forgetPassword = async (req, res) => {
 
   await user.save();
 
-
   await sendOtpEmail(email, otp);
   res.json({ message: "OTP sent to email" });
 };
@@ -129,8 +128,9 @@ export const verifyOTP = async (req, res) => {
     console.log(user);
 
     const isOtpValid =
-      (await bcrypt.compare(otp, user.resetOTP)) &&
-      Date.now() < user.resetOTPexpiry;
+      user.resetOTP === hashOtp(otp) && Date.now() < user.resetOTPexpiry;
+
+    console.log(isOtpValid);
 
     if (!isOtpValid) {
       return res
@@ -139,6 +139,33 @@ export const verifyOTP = async (req, res) => {
     }
 
     return res.status(201).json({ message: "OTP verified Successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "Somethign went wrong please try again" });
+    }
+
+    console.log(user);
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    user.password = hashedPassword;
+
+    await user.save();
+
+    return res.status(201).json({ message: "Password Updated Successfully" });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

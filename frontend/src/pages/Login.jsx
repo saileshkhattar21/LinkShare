@@ -62,6 +62,7 @@ export default function Login() {
       );
 
       alert(res.data.message);
+      navigate("/dashboard");
     } catch (err) {
       alert(err.response?.data?.message || "Lorrrgin failed");
     }
@@ -108,6 +109,7 @@ export default function Login() {
       );
 
       alert(res.data.message);
+      sessionStorage.setItem("resetEmail", loginForm.loginId);
       navigate("/forget-password", {
         state: { email: loginForm.loginId },
       });
