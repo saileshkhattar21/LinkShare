@@ -1,10 +1,11 @@
-import express from "express"
-import auth from "../Middleware/authMiddleware.js"
-import { getTopic, createTopic } from "../Controller/topicController.js"
+import express from "express";
+import auth from "../Middleware/authMiddleware.js";
+import { upload } from "../Middleware/multerMiddleware.js";
+import { getTopic, createTopic } from "../Controller/topicController.js";
 
-const TopicRouter = express.Router()
+const TopicRouter = express.Router();
 
-TopicRouter.post("/create", auth, createTopic)
-TopicRouter.get("/all",auth, getTopic)
+TopicRouter.post("/create", auth, upload.none(), createTopic);
+TopicRouter.get("/all", auth, getTopic);
 
-export default TopicRouter
+export default TopicRouter;

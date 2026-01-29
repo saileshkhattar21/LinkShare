@@ -6,7 +6,7 @@ import {
   verifyOTP,
   resetPassword,
 } from "../Controller/authController.js";
-import upload from "../Middleware/multerMiddleware.js";
+import { upload } from "../Middleware/multerMiddleware.js";
 
 const authRouter = express.Router();
 

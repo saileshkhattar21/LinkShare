@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import User from "./Users.js";
-import Topics from "./Topics";
+import Topics from "./Topics.js";
 
 const ResourceSchema = new mongoose.Schema(
   {
@@ -24,7 +24,7 @@ const ResourceSchema = new mongoose.Schema(
       },
     },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: User },
-    Topic: { type: mongoose.Schema.Types.ObjectId, ref: Topics },
+    topic: { type: mongoose.Schema.Types.ObjectId, ref: Topics },
   },
   { timestamps: true },
 );

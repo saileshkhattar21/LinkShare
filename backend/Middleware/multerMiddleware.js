@@ -2,88 +2,46 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
+const TEMP_DIR = "Uploads/_tmp";
+
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadType = req.body.uploadType;
-
-    if (!uploadType) {
-      return cb(new Error("uploadType is Required"));
-    }
-
-    const userID = req.user?.id;
-    const username = req.body.username;
-
-    let basefolder;
-
-    if (userID) {
-      basefolder = `Uploads/${userID}`;
-    } else if (username) {
-      basefolder = `Uploads/temp/${username}`;
-    } else {
-      return cb(new Error("userId OR username is reuired"));
-    }
-
-    const folder =
-      uploadType === "profile"
-        ? `${basefolder}/profile`
-        : `${basefolder}/documents`;
-
-    fs.mkdirSync(folder, { recursive: true });
-
-    cb(null, folder);
+  destination(req, file, cb) {
+    fs.mkdirSync(TEMP_DIR, { recursive: true });
+    cb(null, TEMP_DIR);
   },
 
-  filename: function (req, file, cb) {
+  filename(req, file, cb) {
     const ext = path.extname(file.originalname);
-    const filename = `${Date.now()}${ext}`;
-    cb(null, filename);
+    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, unique + ext);
   },
 });
 
-const fileFilter = (req, file, cb){
-    const uploadType =req.body.uploadType;
-
-    if(uploadType === "profile"){
-        if(!file.mimetype.startwith("image/")){
-            return cb(new Eroor("Only images are allowed"))
-        }
+const fileFilter = (req, file, cb) => {
+  // validate ONLY using file.fieldname + mimetype
+  if (file.fieldname === "profile") {
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Only image files allowed for profile"));
     }
+  }
 
-    if(uploadType === "Document"){
-        const allowed = [
+  if (file.fieldname === "document") {
+    const allowed = [
       "application/pdf",
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
 
-    if(!allowed.includes(file.mimetypes)){
-        return cb(new Error("Invalid Document type"))
+    if (!allowed.includes(file.mimetype)) {
+      return cb(new Error("Invalid document type"));
     }
-    }
-
-    cb(null, true)
-}
-
-
-
-const moveTempProfile = (username, userId) => {
-  const tempPath = path.join("uploads", "temp", username);
-  const finalPath = path.join("uploads", "users", userId.toString());
-
-  if (!fs.existsSync(tempPath)) {
-    return; // nothing to move
   }
 
-  fs.mkdirSync(path.dirname(finalPath), { recursive: true });
-
-  fs.renameSync(tempPath, finalPath);
+  cb(null, true);
 };
 
-export default moveTempProfile;
-
-
-export const uploaad = multer({
-    storage, 
-    fileFilter,
-    limits : {fileSize : 10*1024*1024} 
-})
+export const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+});

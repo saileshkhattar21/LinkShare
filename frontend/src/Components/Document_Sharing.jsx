@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 export default function ShareDocument({ topics }) {
   const [formState, setFormState] = useState({
@@ -15,9 +16,35 @@ export default function ShareDocument({ topics }) {
       [name]: value,
     }));
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    console.log(formState);
+    formData.append("document", formState.Document);
+    formData.append("description", formState.Description);
+    formData.append("topic", formState.Topic);
+    formData.append("uploadType", "Document");
+    for (const [key, value] of formData) {
+      console.log(`${key}: ${value}`);
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/resource/document/share",
+        formData,
+        { withCredentials: true },
+      );
+
+      alert(res.data.message);
+    } catch (err) {
+      alert(err.response?.data?.message || "Registration failed");
+    }
+  };
   return (
     <>
-      <form>
+      <form onSubmit={handleSubmit}>
         <label class="form-label">Document</label>
         <div class="d-flex">
           <input
@@ -27,7 +54,7 @@ export default function ShareDocument({ topics }) {
             onChange={(e) =>
               setFormState((prev) => ({
                 ...prev,
-                photo: e.target.files[0],
+                Document: e.target.files[0],
               }))
             }
           />
@@ -43,7 +70,7 @@ export default function ShareDocument({ topics }) {
 
         <select
           class="form-select"
-          name="topicId"
+          name="Topic"
           value={formState.topicId}
           onChange={handleChange}
         >

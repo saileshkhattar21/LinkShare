@@ -77,6 +77,7 @@ export default function Login() {
     formData.append("username", registerForm.username);
     formData.append("email", registerForm.email);
     formData.append("password", registerForm.password);
+    formData.append("uploadType", "profile");
 
     if (registerForm.photo) {
       formData.append("photo", registerForm.photo);

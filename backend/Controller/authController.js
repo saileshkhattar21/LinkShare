@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { generateOtp, hashOtp } from "../Services/OTPServices.js";
 import { sendOtpEmail } from "../Services/EmailService.js";
+import { moveTempProfile } from "../Middleware/multerMiddleware.js";
 
 export const register = async (req, res) => {
   try {
@@ -34,6 +35,8 @@ export const register = async (req, res) => {
       password: hashedPassword,
       photo: req.file ? req.file.filename : null,
     });
+
+    moveTempProfile(username, user._id);
 
     res.status(201).json({ message: "User created successfully" });
   } catch (err) {
@@ -68,7 +71,7 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id.toString() },
+      { id: user._id.toString(), username: user.username },
       process.env.JWT_SECRET,
       {
         expiresIn: "1d",
