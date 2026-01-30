@@ -12,4 +12,6 @@ ResourceRouter.post(
   shareDocument,
 );
 
+ResourceRouter.post("/link/share", shareLink);
+
 export default ResourceRouter;

@@ -3,14 +3,18 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { generateOtp, hashOtp } from "../Services/OTPServices.js";
 import { sendOtpEmail } from "../Services/EmailService.js";
-import { moveTempProfile } from "../Middleware/multerMiddleware.js";
+import fs from "fs";
+import path from "path";
 
 export const register = async (req, res) => {
   try {
     const { firstname, lastname, password, username, email } = req.body;
     console.log(firstname, lastname, password, username, email);
 
+    const file = req.file;
+
     if (!email || !username || !password) {
+      if (file) fs.unlinkSync(file.path);
       return res
         .status(400)
         .json({ message: "All required fields must be filled" });
@@ -21,6 +25,7 @@ export const register = async (req, res) => {
     });
 
     if (existingUser) {
+      if (file) fs.unlinkSync(file.path);
       return res.status(400).json({ message: "User already exists" });
     }
 
@@ -36,10 +41,16 @@ export const register = async (req, res) => {
       photo: req.file ? req.file.filename : null,
     });
 
-    moveTempProfile(username, user._id);
+    if (file) {
+      const userDir = `Uploads/${user._id}/profile`;
+      fs.mkdirSync(userDir, { recursive: true });
+
+      fs.renameSync(file.path, path.join(userDir, file.filename));
+    }
 
     res.status(201).json({ message: "User created successfully" });
   } catch (err) {
+    if (req.file?.path) fs.unlinkSync(req.file.path);
     res.status(500).json({ message: err.message });
   }
 };

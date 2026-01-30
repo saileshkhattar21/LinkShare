@@ -2,7 +2,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-const TEMP_DIR = "Uploads/_tmp";
+const TEMP_DIR = "Uploads/tmp";
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -12,16 +12,15 @@ const storage = multer.diskStorage({
 
   filename(req, file, cb) {
     const ext = path.extname(file.originalname);
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, unique + ext);
+    const name = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, name + ext);
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  // validate ONLY using file.fieldname + mimetype
   if (file.fieldname === "profile") {
     if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("Only image files allowed for profile"));
+      return cb(new Error("Profile must be an image"));
     }
   }
 
@@ -31,7 +30,6 @@ const fileFilter = (req, file, cb) => {
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
-
     if (!allowed.includes(file.mimetype)) {
       return cb(new Error("Invalid document type"));
     }
@@ -43,5 +41,5 @@ const fileFilter = (req, file, cb) => {
 export const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
