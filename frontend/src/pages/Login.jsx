@@ -34,11 +34,10 @@ export default function Login() {
 
   useEffect(() => {
     fetchPublicResources();
-    console.log(recentPosts);
 
-    const IntervalId = setInterval(fetchPublicResources, 10000);
+    const intervalId = setInterval(fetchPublicResources, 10000);
 
-    return () => clearInterval(IntervalId);
+    return () => clearInterval(intervalId);
   }, [fetchPublicResources]);
 
   const handleloginchange = (e) => {
@@ -149,36 +148,28 @@ export default function Login() {
                   <div class="card">
                     <div class="card-header">Recent Posts</div>
                     <div class="card-body d-flex flex-column gap-3">
-                      <div class="card">
-                        <div class="card-header">Featured</div>
-                        <div class="card-body">
-                          <h5 class="card-title">Special title treatment</h5>
-                          <p class="card-text">
-                            With supporting text below as a natural lead-in to
-                            additional content.
-                          </p>
-                          <NavLink
-                            to="/somewhere"
-                            class="btn btn-primary text-white"
-                          >
-                            Go somewhere
-                          </NavLink>
+                      {recentPosts.map((post) => (
+                        <div className="card" key={post._id}>
+                          <div className="card-header">{post.topic.name}</div>
+                          <div className="card-body">
+                            <h5 className="card-title">
+                              {post.createdBy.username}
+                            </h5>
+                            <p className="card-text">{post.description}</p>
+                            {post.type === "Document" ? (
+                              <small>show url</small>
+                            ) : (
+                              <small>show document</small>
+                            )}
+                            <NavLink
+                              to="/post"
+                              className="btn btn-primary text-white"
+                            >
+                              View Post
+                            </NavLink>
+                          </div>
                         </div>
-                      </div>
-
-                      <div class="card">
-                        <div class="card-header">Post Title</div>
-                        <div class="card-body">
-                          <h5 class="card-title">Short Decription</h5>
-                          <p class="card-text">Long Discription.........</p>
-                          <NavLink
-                            to="/somewhere"
-                            class="btn btn-primary text-white"
-                          >
-                            Go somewhere
-                          </NavLink>
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
 

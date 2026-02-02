@@ -34,6 +34,7 @@ export const shareDocument = async (req, res) => {
       content: req.file ? req.file.filename : null,
       createdBy: req.user,
       topic: topicID,
+      createdBy: userId,
     });
 
     return res.status(201).json({ message: "Resource added Successfully" });
@@ -64,7 +65,7 @@ export const shareLink = async (req, res) => {
       description: description,
       type: "Link",
       url: link,
-      createBy: user,
+      createdBy: user,
       topic: topicID,
     });
 
@@ -75,6 +76,7 @@ export const shareLink = async (req, res) => {
 };
 
 export const topPosts = async (req, res) => {
+  console.log("Vasdvsadvs");
   try {
     const resources = await Resource.aggregate([
       {
@@ -85,7 +87,12 @@ export const topPosts = async (req, res) => {
           as: "topic",
         },
       },
-      { $unwind: "$topic" },
+      {
+        $unwind: {
+          path: "$topic",
+          preserveNullAndEmptyArrays: false, // keep false if topic is mandatory
+        },
+      },
 
       {
         $match: {
@@ -104,7 +111,12 @@ export const topPosts = async (req, res) => {
           as: "createdBy",
         },
       },
-      { $unwind: "$createdBy" },
+      {
+        $unwind: {
+          path: "$createdBy",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
 
       {
         $project: {
@@ -115,10 +127,11 @@ export const topPosts = async (req, res) => {
           createdAt: 1,
           "topic.name": 1,
           "topic.visibility": 1,
-          "createdBy.name": 1,
+          "createdBy.username": 1,
         },
       },
     ]);
+    console.log(resources);
 
     return res.status(200).json(resources);
   } catch (err) {
