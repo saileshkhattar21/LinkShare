@@ -5,7 +5,7 @@ export default function ShareDocument({ topics }) {
   const [formState, setFormState] = useState({
     Document: null,
     Description: "",
-    Topic: "",
+    TopicID: "",
   });
 
   const handleChange = (e) => {
@@ -24,7 +24,7 @@ export default function ShareDocument({ topics }) {
     console.log(formState);
     formData.append("document", formState.Document);
     formData.append("description", formState.Description);
-    formData.append("topic", formState.Topic);
+    formData.append("topicID", formState.TopicID);
     formData.append("uploadType", "Document");
     for (const [key, value] of formData) {
       console.log(`${key}: ${value}`);
@@ -70,14 +70,14 @@ export default function ShareDocument({ topics }) {
 
         <select
           class="form-select"
-          name="Topic"
-          value={formState.topicId}
+          name="TopicID"
+          value={formState.TopicID}
           onChange={handleChange}
         >
           <option value="">Select Topic</option>
 
           {topics.map((topic) => (
-            <option key={topic._id} value={topic.name}>
+            <option key={topic._id} value={topic._id}>
               {topic.name}
             </option>
           ))}

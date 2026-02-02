@@ -1,5 +1,5 @@
 import "../app.css";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -21,6 +21,25 @@ export default function Login() {
   });
 
   const [loginhelpertext, setloginhelpertext] = useState("");
+  const [recentPosts, setRecentPosts] = useState([]);
+
+  const fetchPublicResources = useCallback(async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/resource/public");
+      setRecentPosts(res.data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPublicResources();
+    console.log(recentPosts);
+
+    const IntervalId = setInterval(fetchPublicResources, 10000);
+
+    return () => clearInterval(IntervalId);
+  }, [fetchPublicResources]);
 
   const handleloginchange = (e) => {
     console.log("Dsd");
