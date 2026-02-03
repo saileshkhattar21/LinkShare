@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 import authRouter from "./Routers/authRouter.js";
 import TopicRouter from "./Routers/TopicRouter.js";
 import ResourceRouter from "./Routers/ReourceRouter.js";
+import SubscriptionRouter from "./Routers/SubscribeRouter.js";
+import InvitationRouter from "./Routers/InvitationRouter.js";
 
 dotenv.config();
 
@@ -25,6 +27,8 @@ app.use("/Uploads", express.static("Uploads"));
 app.use("/api/auth", authRouter);
 app.use("/api/topic", TopicRouter);
 app.use("/api/resource", ResourceRouter);
+app.use("/api/subscribe", SubscriptionRouter);
+app.use("/api/invite", InvitationRouter);
 
 mongoose
   .connect(process.env.MONGO_URL)
