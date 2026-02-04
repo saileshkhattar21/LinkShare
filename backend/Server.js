@@ -5,10 +5,11 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
 import authRouter from "./Routers/authRouter.js";
-import TopicRouter from "./Routers/TopicRouter.js";
-import ResourceRouter from "./Routers/ReourceRouter.js";
-import SubscriptionRouter from "./Routers/SubscribeRouter.js";
-import InvitationRouter from "./Routers/InvitationRouter.js";
+import topicRouter from "./Routers/topicRouter.js";
+import resourceRouter from "./Routers/reourceRouter.js";
+import subscriptionRouter from "./Routers/subscribeRouter.js";
+import invitationRouter from "./Routers/invitationRouter.js";
+import searchRouter from "./Routers/searchRouter.js";
 
 dotenv.config();
 
@@ -25,10 +26,11 @@ app.use(cookieParser());
 app.use("/Uploads", express.static("Uploads"));
 
 app.use("/api/auth", authRouter);
-app.use("/api/topic", TopicRouter);
-app.use("/api/resource", ResourceRouter);
-app.use("/api/subscribe", SubscriptionRouter);
-app.use("/api/invite", InvitationRouter);
+app.use("/api/topics", topicRouter);
+app.use("/api/resources", resourceRouter);
+app.use("/api/subscribers", subscriptionRouter);
+app.use("/api/invites", invitationRouter);
+app.use("/api/searches", searchRouter);
 
 mongoose
   .connect(process.env.MONGO_URL)
