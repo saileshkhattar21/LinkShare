@@ -9,13 +9,14 @@ import axios from "axios";
 export default function Dashboard() {
   const [activeModal, setActiveModal] = useState(null);
   const [topics, setTopics] = useState([]);
+  const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchTopics() {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:5000/api/topic/all", {
+        const res = await axios.get("http://localhost:5000/api/topics/all", {
           withCredentials: true,
         });
         setTopics(res.data);
@@ -29,8 +30,54 @@ export default function Dashboard() {
     fetchTopics();
   }, []);
 
+  useEffect(() => {
+    async function fetchInvites() {
+      console.log("AAAAAAAAAAAAAAA");
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          "http://localhost:5000/api/invites/getinvites",
+          {
+            withCredentials: true,
+          },
+        );
+        console.log("Invites=>>>>>>>", invites);
+        setInvites(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchInvites();
+    console.log(invites);
+  }, []);
+
   const closeModal = () => {
     setActiveModal(null);
+  };
+
+  const handleAccept = async (invite) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/invites/acceptinvite",
+        { invite: invite },
+        { withCredentials: true },
+      );
+      alert(res.data.message);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleReject = async (invite) => {
+    const res = await axios.post(
+      "http://localhost:5000/api/invites/rejectinvite",
+      { invite: invite },
+      { withCredentials: true },
+    );
+    alert(res.data.message);
   };
   return (
     <>
@@ -40,10 +87,10 @@ export default function Dashboard() {
           activeModal === "Link_Sharing"
             ? "Share Link"
             : activeModal === "Document_Sharing"
-            ? "Share Document"
-            : activeModal === "Send_Invite"
-            ? "Send Invite"
-            : "Create Topic"
+              ? "Share Document"
+              : activeModal === "Send_Invite"
+                ? "Send Invite"
+                : "Create Topic"
         }
         onClose={closeModal}
       >
@@ -122,6 +169,44 @@ export default function Dashboard() {
               >
                 Create Topic
               </button>
+            </div>
+
+            <div
+              class="card mt-3 overflow-y-auto"
+              style={invites.length !== 0 ? { height: "275px" } : {}}
+            >
+              <div class="card-header">Invites</div>
+              <div class="card-body d-flex flex-column gap-3">
+                {invites.map((invite) => (
+                  <div className="card" key={invite._id}>
+                    <div className="card-header">{invite.invitedUser}</div>
+                    <div className="card-body">
+                      <h5 className="card-title">{invite.invitedBy}</h5>
+                      <p className="card-text">{invite.status}</p>
+                    </div>
+                    <div class="d-flex justify-content-evenly gap-2 p-3">
+                      <button
+                        class=" btn btn-success w-50"
+                        onClick={() => {
+                          handleAccept(invite);
+                        }}
+                      >
+                        {" "}
+                        Accept Invite{" "}
+                      </button>
+                      <button
+                        class=" btn btn-danger w-50"
+                        onClick={() => {
+                          handleReject(invite);
+                        }}
+                      >
+                        {" "}
+                        Reject Invite{" "}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -7,11 +7,13 @@ const SubscriptionSchema = new mongoose.Schema(
     topic: {
       type: mongoose.Schema.Types.ObjectId,
       ref: Topics,
+      required: true,
     },
 
     User: {
       type: mongoose.Schema.Types.ObjectId,
       ref: User,
+      required: true,
     },
     seriousness: {
       type: String,

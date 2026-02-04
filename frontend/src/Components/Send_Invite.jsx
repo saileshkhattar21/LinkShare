@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { SearchUsers } from "../../Services/UserSearch";
+import { SearchUsers } from "../Services/UserSearch.js";
+import axios from "axios";
 
 export default function SendInvite({ topics }) {
   const [results, setResults] = useState([]);
   const [formState, setFormState] = useState({
     topicId: "",
-    seriousness: "normal",
     selectedUsers: [],
     search: "",
   });
@@ -25,6 +25,7 @@ export default function SendInvite({ topics }) {
   }, [formState.search]);
 
   const handleChange = (e) => {
+    console.log("Editin Invite form");
     const { name, value } = e.target;
     setFormState((prev) => ({
       ...prev,
@@ -49,21 +50,22 @@ export default function SendInvite({ topics }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formState.topicId || !formState.selectedUsers.length) return;
 
     try {
-      console.log(formState);
+      const res = await axios.post(
+        "http://localhost:5000/api/invites/sendinvite",
+        { topic: formState.topicId, users: formState.selectedUsers },
+        { withCredentials: true },
+      );
+      alert(res.data.message);
     } catch (err) {
       alert(err.message);
     }
   };
-
-  const filteredUsers = results.filter((u) =>
-    u.username.toLowerCase().includes(formState.search.toLowerCase()),
-  );
 
   return (
     <form onSubmit={handleSubmit}>
@@ -79,7 +81,7 @@ export default function SendInvite({ topics }) {
 
       {formState.search && (
         <div className="border rounded mt-1">
-          {filteredUsers.map((user) => (
+          {results.map((user) => (
             <div
               key={user._id}
               className="p-2 cursor-pointer hover-bg"
@@ -120,18 +122,6 @@ export default function SendInvite({ topics }) {
             {topic.name}
           </option>
         ))}
-      </select>
-
-      <label className="form-label mt-3">Seriousness</label>
-      <select
-        className="form-select"
-        name="seriousness"
-        value={formState.seriousness}
-        onChange={handleChange}
-      >
-        <option value="low">Low</option>
-        <option value="normal">Normal</option>
-        <option value="high">High</option>
       </select>
 
       <button className="btn btn-success mt-3 mx-auto d-block" type="submit">

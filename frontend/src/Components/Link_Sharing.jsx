@@ -23,7 +23,7 @@ export default function ShareLinkForm({ topics }) {
     try {
       console.log(formState);
       const res = await axios.post(
-        "http://localhost:5000/api/resource/link/share",
+        "http://localhost:5000/api/resources/link/share",
         {
           link: formState.Link,
           description: formState.Description,

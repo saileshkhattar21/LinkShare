@@ -32,7 +32,7 @@ export default function ShareDocument({ topics }) {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/resource/document/share",
+        "http://localhost:5000/api/resources/document/share",
         formData,
         { withCredentials: true },
       );

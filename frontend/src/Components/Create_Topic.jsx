@@ -30,7 +30,7 @@ export default function CreateTopic() {
     }
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/topic/create",
+        "http://localhost:5000/api/topics/create",
         formData,
         { withCredentials: true },
       );

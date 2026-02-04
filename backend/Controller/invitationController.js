@@ -1,4 +1,5 @@
 import Invitations from "../Models/Invitations.js";
+import Subscription from "../Models/Subscription.js";
 
 export const createInvite = async (req, res) => {
   try {
@@ -26,6 +27,7 @@ export const createInvite = async (req, res) => {
 };
 
 export const getInvites = async (req, res) => {
+  console.log("DDSDsdsdsdsds");
   const user = req.user;
 
   if (!user) {
@@ -35,13 +37,58 @@ export const getInvites = async (req, res) => {
   console.log(user);
 
   try {
-    const invites = Invitations.find({
+    const invites = await Invitations.find({
       invitedUser: user,
     });
-    console.log(invites);
 
     return res.status(200).json(invites);
   } catch (err) {
     return res.status(500).json({ message: "Could not fetch invites" });
+  }
+};
+
+export const acceptInvite = async (req, res) => {
+  const user = req.user;
+
+  const { invite } = req.body;
+
+  console.log(user, invite);
+
+  if (!user || !invite) {
+    return res.status(400).json({ message: "Could not accept invite" });
+  }
+
+  try {
+    const subscibe = await Subscription.create({
+      topic: invite.topic,
+      User: req.user,
+    });
+
+    console.log(subscibe);
+
+    const delete_invite = await Invitations.deleteOne({ _id: invite._id });
+
+    return res.status(200).json({ message: "Invite Accepted" });
+  } catch (err) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const rejectinvite = async (req, res) => {
+  const user = req.user;
+  const { invite } = req.body;
+
+  if (!user) {
+    return res.status(400).json({ message: "User not Found" });
+  }
+
+  try {
+    const rejected_invite = await Invitations.deleteOne({ _id: invite._id });
+
+    if (rejected_invite) {
+      return res.status(200).json({ message: "Invite Rejected" });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
