@@ -1,13 +1,85 @@
+/* ===== GLOBAL DARK THEME ===== */
+
 .app-root {
+  background-color: #0d1117;
   min-height: 100vh;
-  background-color: #0f172a; /* dark theme */
+  color: #c9d1d9;
 }
 
-hover-underline {
+/* ===== CONTAINER LAYER ===== */
+
+.dark-container {
+  background: #0d1117;
+}
+
+/* ===== CUSTOM CARD ===== */
+
+.dark-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.dark-card-header {
+  border-bottom: 1px solid #30363d;
+  font-weight: 600;
+  color: #e6edf3;
+}
+
+/* ===== PANEL DIV (Replaces big cards like Recent Posts) ===== */
+
+.dark-panel {
+  background: #161b22;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #30363d;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+}
+
+/* ===== INPUTS ===== */
+
+.form-control {
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+}
+
+.form-control:focus {
+  background-color: #0d1117;
+  color: white;
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 0.15rem rgba(88, 166, 255, 0.25);
+}
+
+/* ===== BUTTON TWEAK ===== */
+
+.btn-primary {
+  background-color: #238636;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #2ea043;
+}
+
+.btn-success {
+  background-color: #238636;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #2ea043;
+}
+
+/* ===== LINKS ===== */
+
+a {
+  color: #58a6ff;
   text-decoration: none;
 }
 
-
-.hover-underline:hover {
+a:hover {
   text-decoration: underline;
 }

@@ -10,6 +10,7 @@ import resourceRouter from "./Routers/reourceRouter.js";
 import subscriptionRouter from "./Routers/subscribeRouter.js";
 import invitationRouter from "./Routers/invitationRouter.js";
 import searchRouter from "./Routers/searchRouter.js";
+import userRouter from "./Routers/userRouter.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(cookieParser());
 app.use("/Uploads", express.static("Uploads"));
 
 app.use("/api/auth", authRouter);
+app.use("/api/users/", userRouter);
 app.use("/api/topics", topicRouter);
 app.use("/api/resources", resourceRouter);
 app.use("/api/subscribers", subscriptionRouter);

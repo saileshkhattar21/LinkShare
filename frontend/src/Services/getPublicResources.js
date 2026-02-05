@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const getPublicResources = async () => {
   try {
-    const res = axios.get("http://localhost:5000/api/resource/public", {
+    const res = await axios.get("http://localhost:5000/api/resources/public", {
       withCredentials: true,
     });
     return res.data;
