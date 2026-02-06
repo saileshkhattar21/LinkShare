@@ -1,5 +1,6 @@
 import Resource from "../Models/Resource.js";
 import Topics from "../Models/Topics.js";
+import Subscription from "../Models/Subscription.js";
 import Users from "../Models/Users.js";
 import fs from "fs";
 import path from "path";
@@ -126,8 +127,13 @@ export const topPosts = async (req, res) => {
           content: 1,
           createdAt: 1,
           "topic.name": 1,
+          "topic._id": 1,
           "topic.visibility": 1,
           "createdBy.username": 1,
+          "createdBy._id": 1,
+          "createdBy.firstname": 1,
+          "createdBy.lastname": 1,
+          "createdBy.photo": 1,
         },
       },
     ]);
@@ -137,5 +143,89 @@ export const topPosts = async (req, res) => {
   } catch (err) {
     console.error("Aggregation error:", err);
     res.status(500).json({ message: err.message });
+  }
+};
+
+export const subscribedPosts = async (req, res) => {
+  console.log("Getting Subscribed Posts");
+
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({ message: "Could not find user" });
+  }
+
+  try {
+    const resources = await Subscription.aggregate([
+      // Step 1 → Get subscriptions of current user
+      {
+        $match: {
+          User: user._id,
+        },
+      },
+
+      // Step 2 → Lookup resources from subscribed topics
+      {
+        $lookup: {
+          from: "resources", // collection name in MongoDB (lowercase plural)
+          localField: "topic",
+          foreignField: "topic",
+          as: "resources",
+        },
+      },
+
+      // Step 3 → Flatten resources array
+      {
+        $unwind: "$resources",
+      },
+
+      // Step 4 → Replace root to return only resource object
+      {
+        $replaceRoot: {
+          newRoot: "$resources",
+        },
+      },
+
+      // Optional → Populate creator + topic details
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      },
+      {
+        $unwind: {
+          path: "$createdBy",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "topics",
+          localField: "topic",
+          foreignField: "_id",
+          as: "topic",
+        },
+      },
+      {
+        $unwind: {
+          path: "$topic",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      // Optional → Sort latest first
+      {
+        $sort: { createdAt: -1 },
+      },
+    ]);
+
+    return res.status(200).json(resources);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };

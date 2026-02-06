@@ -15,10 +15,6 @@ const SubscriptionSchema = new mongoose.Schema(
       ref: User,
       required: true,
     },
-    seriousness: {
-      type: String,
-      enum: ["Serious", "Very Serious", "Casual"],
-    },
   },
   { timestamps: true },
 );

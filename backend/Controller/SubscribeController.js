@@ -1,23 +1,22 @@
 import Subscription from "../Models/Subscription.js";
 
-export const newSubscribe = async (req, res) => {
+export const newSubscriber = async (req, res) => {
   try {
     const user = req.user;
 
-    const { topic, seriousness } = req.body;
+    const { topicId } = req.body;
 
-    console.log(user, topic);
+    console.log(user, topicId);
 
-    if (!user || !topic || seriousness) {
+    if (!user || !topicId) {
       return res
         .status(400)
         .json({ message: "Could not subscribe, All Fields Required" });
     }
 
     const sub = Subscription.create({
-      topic: topic,
-      user: user,
-      seriousness: seriousness,
+      topic: topicId,
+      User: user,
     });
 
     return res.status(200).json({ message: "Subscription Successful" });
