@@ -2,7 +2,8 @@ import "../app.css";
 import { useState } from "react";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
-import { usePublicResource } from "../Hooks/userPublcServices.js";
+import { usePosts } from "../Hooks/usePosts.js";
+import FileCard from "../Components/FileCard.jsx";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -23,7 +24,10 @@ export default function Login() {
   });
 
   const [loginhelpertext, setloginhelpertext] = useState("");
-  const { recentPosts } = usePublicResource();
+  const recentPosts = usePosts({
+    type: "recommended",
+    enabled: true,
+  });
 
   /* ================= LOGIN ================= */
 
@@ -131,23 +135,50 @@ export default function Login() {
                   className="d-flex flex-column gap-3 overflow-scroll"
                   style={{ height: "300px" }}
                 >
-                  {recentPosts.map((post) => (
+                  {recentPosts.posts.map((post) => (
                     <div className="card dark-card" key={post._id}>
                       <div className="card-header dark-card-header">
                         {post.topic.name}
                       </div>
 
                       <div className="card-body">
-                        <h6>{post.createdBy.username}</h6>
+                        <div className="d-flex align-items-center gap-4 mb-2">
+                          {/* Avatar */}
+                          <img
+                            src="/default-user.png"
+                            alt="User"
+                            width="50"
+                            height="50"
+                            className="rounded-circle border border-secondary"
+                            style={{ objectFit: "cover" }}
+                          />
+                          <div className="flex-grow-1">
+                            {/* Full Name */}
+                            <h5>
+                              {post.createdBy
+                                ? post.createdBy.firstname
+                                : "Firstname"}{" "}
+                              {post.createdBy
+                                ? post.createdBy.lastname
+                                : "Lastname"}
+                            </h5>
+
+                            {/* Username */}
+                            <small>
+                              @
+                              {post.createdBy
+                                ? post.createdBy.username
+                                : "username"}
+                            </small>
+                          </div>
+                        </div>
 
                         <p>{post.description}</p>
 
                         {post.type === "Document" ? (
-                          <iframe
-                            src={post.content}
-                            title="doc"
-                            width="100%"
-                            height="120"
+                          <FileCard
+                            fileName={post.content}
+                            filePath={`Uploads/${post.createdBy._id}/documents/${post.content}`}
                           />
                         ) : (
                           <a href={post.url} target="_blank" rel="noreferrer">
@@ -157,7 +188,7 @@ export default function Login() {
 
                         <NavLink
                           to="/post"
-                          className="btn btn-primary mt-2 w-100"
+                          className="btn btn-primary mt-3 w-100"
                         >
                           View Post
                         </NavLink>

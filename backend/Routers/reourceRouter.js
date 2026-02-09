@@ -5,6 +5,8 @@ import {
   shareDocument,
   shareLink,
   topPosts,
+  subscribedPosts,
+  popularPosts,
 } from "../Controller/resourceController.js";
 
 const ResourceRouter = express.Router();
@@ -17,6 +19,8 @@ ResourceRouter.post(
 );
 
 ResourceRouter.post("/link/share", auth, shareLink);
-ResourceRouter.get("/public", topPosts);
+ResourceRouter.get("/recommended", topPosts);
+ResourceRouter.get("/feed", auth, subscribedPosts);
+ResourceRouter.get("/popular", auth, popularPosts);
 
 export default ResourceRouter;

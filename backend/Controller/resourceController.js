@@ -4,6 +4,7 @@ import Subscription from "../Models/Subscription.js";
 import Users from "../Models/Users.js";
 import fs from "fs";
 import path from "path";
+import mongoose from "mongoose";
 
 export const shareDocument = async (req, res) => {
   try {
@@ -157,36 +158,31 @@ export const subscribedPosts = async (req, res) => {
 
   try {
     const resources = await Subscription.aggregate([
-      // Step 1 → Get subscriptions of current user
       {
         $match: {
-          User: user._id,
+          User: new mongoose.Types.ObjectId(user),
         },
       },
 
-      // Step 2 → Lookup resources from subscribed topics
       {
         $lookup: {
-          from: "resources", // collection name in MongoDB (lowercase plural)
+          from: "resources",
           localField: "topic",
           foreignField: "topic",
           as: "resources",
         },
       },
 
-      // Step 3 → Flatten resources array
       {
         $unwind: "$resources",
       },
 
-      // Step 4 → Replace root to return only resource object
       {
         $replaceRoot: {
           newRoot: "$resources",
         },
       },
 
-      // Optional → Populate creator + topic details
       {
         $lookup: {
           from: "users",
@@ -217,7 +213,84 @@ export const subscribedPosts = async (req, res) => {
         },
       },
 
-      // Optional → Sort latest first
+      {
+        $sort: { createdAt: -1 },
+      },
+    ]);
+
+    return res.status(200).json(resources);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const popularPosts = async (req, res) => {
+  console.log("Getting Subscribed Posts");
+
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({ message: "Could not find user" });
+  }
+
+  try {
+    const resources = await Subscription.aggregate([
+      {
+        $match: {
+          User: new mongoose.Types.ObjectId(user),
+        },
+      },
+
+      {
+        $lookup: {
+          from: "resources",
+          localField: "topic",
+          foreignField: "topic",
+          as: "resources",
+        },
+      },
+
+      {
+        $unwind: "$resources",
+      },
+
+      {
+        $replaceRoot: {
+          newRoot: "$resources",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      },
+      {
+        $unwind: {
+          path: "$createdBy",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "topics",
+          localField: "topic",
+          foreignField: "_id",
+          as: "topic",
+        },
+      },
+      {
+        $unwind: {
+          path: "$topic",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
       {
         $sort: { createdAt: -1 },
       },

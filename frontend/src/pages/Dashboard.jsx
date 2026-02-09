@@ -3,10 +3,10 @@ import ShareLinkForm from "../Components/Link_Sharing";
 import CreateTopic from "../Components/Create_Topic";
 import ShareDocument from "../Components/Document_Sharing";
 import SendInvite from "../Components/Send_Invite";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { usePublicResource } from "../Hooks/userPublcServices";
-import { NavLink } from "react-router-dom";
+import { usePosts } from "../Hooks/usePosts.js";
+import PostsTabs from "../Components/PostTabs";
 import "../app.css";
 
 export default function Dashboard() {
@@ -14,11 +14,54 @@ export default function Dashboard() {
   const [topics, setTopics] = useState([]);
   const [invites, setInvites] = useState([]);
   const [userDetails, setUserDetails] = useState(null);
+  const [activeTab, setActiveTab] = useState("recommended");
   const [loading, setLoading] = useState(false);
 
-  const { recentPosts } = usePublicResource();
+  const containerRef = useRef(null);
 
-  /* ================= FETCH DATA ================= */
+  const scrollRef = useRef({
+    recommended: 0,
+    feed: 0,
+    popular: 0,
+  });
+
+  const recommended = usePosts({
+    type: "recommended",
+    enabled: activeTab === "recommended",
+  });
+
+  const feed = usePosts({
+    type: "feed",
+    enabled: activeTab === "feed",
+  });
+
+  const popular = usePosts({
+    type: "popular",
+    enabled: activeTab === "popular",
+  });
+
+  const handleTabChange = (tab) => {
+    if (containerRef.current) {
+      console.log("Saving scroll:", containerRef.current.scrollTop);
+
+      scrollRef.current[activeTab] = containerRef.current.scrollTop;
+    }
+
+    setActiveTab(tab);
+  };
+  useEffect(() => {
+    if (containerRef.current) {
+      console.log("Restoring scroll:", scrollRef.current[activeTab]);
+
+      containerRef.current.scrollTop = scrollRef.current[activeTab] || 0;
+    }
+  }, [activeTab]);
+
+  const currentTabData = {
+    recommended,
+    feed,
+    popular,
+  }[activeTab];
 
   useEffect(() => {
     async function fetchTopics() {
@@ -97,6 +140,19 @@ export default function Dashboard() {
       { withCredentials: true },
     );
     alert(res.data.message);
+  };
+
+  const handleSubscribe = async (topic_id) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/subscribers/newsubscription",
+        { topicId: topic_id },
+        { withCredentials: true },
+      );
+      alert(res.data.message);
+    } catch (err) {
+      alert(err);
+    }
   };
 
   /* ================= UI ================= */
@@ -215,40 +271,15 @@ export default function Dashboard() {
 
               {/* RECENT POSTS PANEL */}
 
-              <div
-                className="dark-panel overflow-y-auto"
-                style={{ height: "400px" }}
-              >
-                <h5 className="mb-3">Recommeded</h5>
-
-                <div className="d-flex flex-column gap-3">
-                  {recentPosts.map((post) => (
-                    <div className="card dark-card" key={post._id}>
-                      <div className="card-header dark-card-header">
-                        {post.topic.name}
-                      </div>
-
-                      <div className="card-body">
-                        <h6>{post.createdBy.username}</h6>
-                        <p>{post.description}</p>
-
-                        {post.type === "Document" ? (
-                          <small>Document Shared</small>
-                        ) : (
-                          <small>Link Shared</small>
-                        )}
-
-                        <NavLink
-                          to="/post"
-                          className="btn btn-primary w-100 mt-2"
-                        >
-                          View Post
-                        </NavLink>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <PostsTabs
+                activeTab={activeTab}
+                setActiveTab={handleTabChange}
+                posts={currentTabData.posts}
+                refresh={currentTabData.refresh}
+                userDetails={userDetails}
+                handleSubscribe={handleSubscribe}
+                constainerRef={containerRef}
+              />
             </div>
 
             {/* RIGHT SIDE */}
