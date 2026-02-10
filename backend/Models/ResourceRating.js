@@ -1,14 +1,14 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
+import Resource from "./Resource.js";
+import User from "./Users.js";
 
+const ResorceRating = new mongoose.Schema({
+  resource: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Resource,
+  },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: User },
+  score: { type: Number },
+});
 
-const ResorceRating =  new mongoose.Schema({
-    resource :{
-        type : mongoose.Schema.Types.ObjectId, 
-        ref : Resource
-    }, 
-    user : {type : mongoose.Schema.Types.ObjectId, ref : User},
-    score : {type: number}
-})
-
-
-export default mongoose.model("Ratings", ResorceRating)
+export default mongoose.model("Ratings", ResorceRating);

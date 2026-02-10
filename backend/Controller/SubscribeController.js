@@ -24,3 +24,26 @@ export const newSubscriber = async (req, res) => {
     return res.status(500).json("Something went wrong");
   }
 };
+
+export const deleteSubscriber = async (req, res) => {
+  try {
+    const user = req.user;
+    console.log(user);
+    const { topicId } = req.body;
+
+    if (!user || !topicId) {
+      return res.status(401).json({ message: "Unauthorised" });
+    }
+
+    console.log(user, topicId);
+
+    await Subscription.findOneAndDelete({
+      User: user,
+      topic: topicId,
+    });
+
+    return res.status(200).json({ message: "Subscription Removed" });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};

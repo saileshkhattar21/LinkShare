@@ -19,7 +19,7 @@ ResourceRouter.post(
 );
 
 ResourceRouter.post("/link/share", auth, shareLink);
-ResourceRouter.get("/recommended", topPosts);
+ResourceRouter.get("/recommended", auth, topPosts);
 ResourceRouter.get("/feed", auth, subscribedPosts);
 ResourceRouter.get("/popular", auth, popularPosts);
 

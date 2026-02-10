@@ -78,9 +78,12 @@ export const shareLink = async (req, res) => {
 };
 
 export const topPosts = async (req, res) => {
-  console.log("Vasdvsadvs");
   try {
-    const resources = await Resource.aggregate([
+    const userId = req.user;
+
+    console.log(userId);
+
+    const pipeline = [
       {
         $lookup: {
           from: "topics",
@@ -89,19 +92,56 @@ export const topPosts = async (req, res) => {
           as: "topic",
         },
       },
-      {
-        $unwind: {
-          path: "$topic",
-          preserveNullAndEmptyArrays: false, // keep false if topic is mandatory
-        },
-      },
+      { $unwind: "$topic" },
 
       {
         $match: {
           "topic.visibility": "Public",
         },
       },
+    ];
 
+    if (userId) {
+      pipeline.push(
+        {
+          $lookup: {
+            from: "subscriptions",
+            let: { topicId: "$topic._id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$topic", "$$topicId"] },
+                      { $eq: ["$User", new mongoose.Types.ObjectId(userId)] },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "subscription",
+          },
+        },
+        {
+          $addFields: {
+            isSubscribed: { $gt: [{ $size: "$subscription" }, 0] },
+          },
+        },
+        {
+          $project: {
+            subscription: 0,
+          },
+        },
+      );
+    } else {
+      pipeline.push({
+        $addFields: {
+          isSubscribed: false,
+        },
+      });
+    }
+
+    pipeline.push(
       { $sort: { createdAt: -1 } },
       { $limit: 5 },
 
@@ -113,12 +153,7 @@ export const topPosts = async (req, res) => {
           as: "createdBy",
         },
       },
-      {
-        $unwind: {
-          path: "$createdBy",
-          preserveNullAndEmptyArrays: false,
-        },
-      },
+      { $unwind: "$createdBy" },
 
       {
         $project: {
@@ -127,22 +162,25 @@ export const topPosts = async (req, res) => {
           url: 1,
           content: 1,
           createdAt: 1,
-          "topic.name": 1,
+          isSubscribed: 1,
+
           "topic._id": 1,
-          "topic.visibility": 1,
-          "createdBy.username": 1,
+          "topic.name": 1,
+
           "createdBy._id": 1,
+          "createdBy.username": 1,
           "createdBy.firstname": 1,
           "createdBy.lastname": 1,
           "createdBy.photo": 1,
         },
       },
-    ]);
-    console.log(resources);
+    );
 
+    const resources = await Resource.aggregate(pipeline);
+    console.log(resources);
     return res.status(200).json(resources);
   } catch (err) {
-    console.error("Aggregation error:", err);
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 };

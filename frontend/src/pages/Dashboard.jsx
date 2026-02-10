@@ -63,6 +63,20 @@ export default function Dashboard() {
     popular,
   }[activeTab];
 
+  const handleRate = async (resource, rating) => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/rating/userrating",
+        { resource, rating },
+        { withCredentials: true },
+      );
+
+      currentTabData.refetch();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     async function fetchTopics() {
       try {
@@ -142,16 +156,31 @@ export default function Dashboard() {
     alert(res.data.message);
   };
 
-  const handleSubscribe = async (topic_id) => {
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/api/subscribers/newsubscription",
-        { topicId: topic_id },
-        { withCredentials: true },
-      );
-      alert(res.data.message);
-    } catch (err) {
-      alert(err);
+  const handleSubscribe = async (post) => {
+    if (post.isSubscribed) {
+      try {
+        const res = await axios.post(
+          "http://localhost:5000/api/subscribers/deletesubscription",
+          { topicId: post.topic._id },
+          { withCredentials: true },
+        );
+        alert(res.data.message);
+        return;
+      } catch (err) {
+        alert(err);
+        return;
+      }
+    } else {
+      try {
+        const res = await axios.post(
+          "http://localhost:5000/api/subscribers/newsubscription",
+          { topicId: post.topic._id },
+          { withCredentials: true },
+        );
+        alert(res.data.message);
+      } catch (err) {
+        alert(err);
+      }
     }
   };
 
@@ -279,6 +308,7 @@ export default function Dashboard() {
                 userDetails={userDetails}
                 handleSubscribe={handleSubscribe}
                 constainerRef={containerRef}
+                handleRate={handleRate}
               />
             </div>
 

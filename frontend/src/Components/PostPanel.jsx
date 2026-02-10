@@ -1,7 +1,8 @@
 import FileCard from "./FileCard";
 import { NavLink } from "react-router-dom";
+import PostRating from "./PostRating";
 
-export default function PostsPanel({ posts, userDetails, handleSubscribe }) {
+export default function PostsPanel({ posts, handleSubscribe, handleRate }) {
   return (
     <div className="d-flex flex-column gap-3">
       {posts.map((post) => (
@@ -9,7 +10,6 @@ export default function PostsPanel({ posts, userDetails, handleSubscribe }) {
           <div className="card-header dark-card-header">{post.topic.name}</div>
 
           <div className="card-body">
-            {/* HEADER */}
             <div className="d-flex justify-content-between">
               <div className="d-flex align-items-center gap-3">
                 <img
@@ -23,21 +23,23 @@ export default function PostsPanel({ posts, userDetails, handleSubscribe }) {
 
                 <div>
                   <h6 className="mb-0">
-                    {userDetails?.[0]?.firstname || "Firstname"}{" "}
-                    {userDetails?.[0]?.lastname || "Lastname"}
+                    {post.createdBy?.firstname || "Firstname"}{" "}
+                    {post.createdBy?.lastname || "Lastname"}
                   </h6>
 
                   <small className="text-muted">
-                    @{userDetails?.[0]?.username || "username"}
+                    @{post.createdBy?.username || "username"}
                   </small>
                 </div>
               </div>
 
               <button
-                className="btn btn-success rounded-pill"
-                onClick={() => handleSubscribe(post.topic._id)}
+                className={`btn ${post.isSubscribed ? "btn-danger" : "btn-success"} rounded-pill`}
+                onClick={() => {
+                  handleSubscribe(post);
+                }}
               >
-                Subscribe
+                {post.isSubscribed ? "Unsubscribe" : "Subscribe"}
               </button>
             </div>
 
@@ -55,6 +57,10 @@ export default function PostsPanel({ posts, userDetails, handleSubscribe }) {
                 {post.url}
               </a>
             )}
+            <div className="d-flex align-items-center">
+              <h5 className="mb-0 me-2">Rating:</h5>
+              <PostRating post={post} handleRate={handleRate} />
+            </div>
 
             <NavLink to="/post" className="btn btn-primary w-100 mt-2">
               View Post

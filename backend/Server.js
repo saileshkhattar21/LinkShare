@@ -11,6 +11,7 @@ import subscriptionRouter from "./Routers/subscribeRouter.js";
 import invitationRouter from "./Routers/invitationRouter.js";
 import searchRouter from "./Routers/searchRouter.js";
 import userRouter from "./Routers/userRouter.js";
+import ratingRouter from "./Routers/ratingRouter.js";
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use("/api/resources", resourceRouter);
 app.use("/api/subscribers", subscriptionRouter);
 app.use("/api/invites", invitationRouter);
 app.use("/api/searches", searchRouter);
+app.use("/api/rating", ratingRouter);
 
 mongoose
   .connect(process.env.MONGO_URL)

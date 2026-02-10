@@ -4,7 +4,8 @@ export default function auth(req, res, next) {
   const token = req.cookies?.token;
 
   if (!token) {
-    return res.status(401).json({ message: "token not found. Can not log in" });
+    req.user = null;
+    return next();
   }
 
   try {

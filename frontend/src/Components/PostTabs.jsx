@@ -8,6 +8,7 @@ export default function PostsTabs({
   posts,
   refresh,
   containerRef,
+  handleRate,
 }) {
   return (
     <div
@@ -61,6 +62,7 @@ export default function PostsTabs({
           posts={posts}
           userDetails={userDetails}
           handleSubscribe={handleSubscribe}
+          handleRate={handleRate}
         />
       )}
 
